@@ -11,7 +11,6 @@ hmmseq.py infer --vcf geno.vcf.gz --mom FVB_NJ --dad WSB_EiJ PWK_PhJ \
 		--region chr1 -o result.npz
 hmmseq.py summarize -i result.npz --polish
 ```
-
 Reconstructed haplotypes are in `result.haps.bed` and crossovers in `result.recombs.bed`.
 
 ## Dependencies
