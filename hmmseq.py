@@ -35,10 +35,6 @@ parser.add_argument("-r", "--region", type = str,
 					default = "chr19",
 					required = False,
 					help = "target this genomic region, specified samtools-style like 'chr1:1-10' [default: %(default)s]")
-#parser.add_argument("-t", "--threads", type = int,
-#					default = 1,
-#					help = "number of threads to use when parsing VCF [default: %(default)d]")
-
 
 subparsers = parent_parser.add_subparsers(dest = "which_cmd")
 parser_build = subparsers.add_parser("build", parents = [parser])
@@ -106,7 +102,7 @@ def get_sample_idx(v, samples):
 		return [ v.samples.index(s) for s in samples ]
 
 def slurp_command(cmd):
-	"""Consume output of a shell command (given as list.)"""
+	"""Consume ENTIRE output of a shell command (given as list.)"""
 	out = sp.Popen(cmd, stdin = sp.PIPE, stderr = sp.PIPE, stdout = sp.PIPE)
 	so, se = out.communicate()
 	code = out.returncode
@@ -132,6 +128,7 @@ def unphred(x):
 	return p
 
 def get_sdp(pidx, site):
+	"""Given a vector of homozygous genotypes, compute the integer corresponding to the SDP."""
 	geno = np.array(get_gts(site.gt_types[pidx]), dtype = np.int)
 	if min(geno) < 0 or np.sum(geno == 1) > 0:
 		return None
@@ -223,6 +220,7 @@ def iterruns(x, value=None, **kwargs):
 def reconstruct(sdps, gobs, tprob, eprob, pi, mask, bias = 0.0):
 	"""
 	Reconstruct haplotypes by fwd-back and Viterbi algorithms.
+	Adapted from https://github.com/churchill-lab/gbrs/blob/master/gbrs/commands.py
 
 	Parameters:
 	sdps = SDP at each visited site
